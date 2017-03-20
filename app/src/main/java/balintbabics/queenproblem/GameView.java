@@ -1,11 +1,15 @@
 package balintbabics.queenproblem;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -16,47 +20,66 @@ import butterknife.BindView;
 
 public class GameView extends View {
 
+    private static final int MARGIN_DP = 32;
+
+    static int MARGIN;
+
     private static String TAG = "GameView"; // or GameView.class.getSimpleName();
 
     @BindView(R.id.game_view)
     public LinearLayout gameView;
 
+    int QUEENSCOUNT = 8;
     int rows;
     int columns;
-    int QUEENSCOUNT = 8;
-    int cellSize = 100;
-
-    static int startX;
-    static int startY;
-
     boolean drawQueen[][];
 
-    Context context;
     Paint paint;
+
     Drawable queenIcon;
 
     public GameView(Context context) {
         super(context);
+        init(context);
+    }
 
-        this.context = context;
+    public GameView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
 
-        startX = 135;
-        startY = 100;
+    public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
 
-        rows = QUEENSCOUNT;
-        columns = QUEENSCOUNT;
+    @TargetApi(21)
+    public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context);
+    }
 
-        drawQueen = new boolean[rows][columns];
+    private void init(Context context) {
+        if(!isInEditMode()) {
+            rows = QUEENSCOUNT;
+            columns = QUEENSCOUNT;
 
-        for(int i = 0 ; i < rows ; i++) {
-            for( int j = 0 ; j < columns ; j++) {
-                drawQueen[i][j] = false;
+            MARGIN = dpToPx(MARGIN_DP);
+
+            for(int i = 0; i < rows; i++) {
+                for(int j = 0; j < columns; j++) {
+                    drawQueen[i][j] = false;
+                }
             }
+
+            queenIcon = ContextCompat.getDrawable(context, R.drawable.queen);
+
+            paint = new Paint();
         }
+    }
 
-        queenIcon = ContextCompat.getDrawable(context, R.drawable.queen);
-
-        paint = new Paint();
+    public static int dpToPx(double dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
     @Override
@@ -65,48 +88,44 @@ public class GameView extends View {
         drawChessTable(canvas);
     }
 
+    private int getFloatAsInt(float input) {
+        return ((Float) input).intValue();
+    }
+
     private void drawChessTable(Canvas canvas) {
+        int size = getWidth();
+        float halfSize = ((float) size) / 2;
 
-        int X = startX;
-        int Y = startY;
+        float halfGrid = halfSize - MARGIN;
+        float cellSize = halfGrid / (((float) QUEENSCOUNT) / 2);
 
-        int k = 0;
-
-        for(int i = 0 ; i < rows ; i++) {
-            for( int j = 0 ; j < columns ; j++) {
-
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < columns; j++) {
                 paint.setStyle(Paint.Style.FILL);
 
-                if(k % 2 == 0) {
+                if((i + j) % 2 == 0) {
                     paint.setColor(Color.WHITE);
-                    canvas.drawRect( X, Y, X + cellSize, Y + cellSize, paint);
-                }
-                else {
+                } else {
                     paint.setColor(Color.BLACK);
-                    canvas.drawRect( X, Y, X + cellSize, Y + cellSize, paint);
                 }
+                canvas.drawRect(MARGIN + j * cellSize, MARGIN + i * cellSize, MARGIN + (j + 1) * cellSize, MARGIN + (i + 1) * cellSize, paint);
 
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setStrokeWidth(5);
-                canvas.drawRect( X, Y, X + cellSize, Y + cellSize, paint);
+                canvas.drawRect(MARGIN + j * cellSize, MARGIN + i * cellSize, MARGIN + (j + 1) * cellSize, MARGIN + (i + 1) * cellSize, paint);
+
                 if(drawQueen[i][j]) {
-                    queenIcon.setBounds(X, Y, X+cellSize, Y+cellSize);
+                    queenIcon.setBounds(getFloatAsInt(MARGIN + j * cellSize), getFloatAsInt(MARGIN + i * cellSize), getFloatAsInt(MARGIN + (j + 1) * cellSize), getFloatAsInt(MARGIN + (i + 1) * cellSize));
                     queenIcon.draw(canvas);
                 }
-                k++;
-                X += cellSize;
-            }
-
-            X = startX;
-            Y += cellSize;
-            if(rows % 2 == 0) {
-                k++;
             }
         }
     }
 
-    protected void drawQueenToGivenPosition(int posX, int posY) {
-        drawQueen[posX][posY] = true;
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int min = Math.min(getMeasuredHeight(), getMeasuredWidth());
+        setMeasuredDimension(min, min);
     }
-
 }

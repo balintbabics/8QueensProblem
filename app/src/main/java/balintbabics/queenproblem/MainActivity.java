@@ -1,15 +1,12 @@
 package balintbabics.queenproblem;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import java.util.ArrayList;
-import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -19,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity"; // or MainActivity.class.getSimpleName();
 
     @BindView(R.id.game_view)
-    public LinearLayout gameView;
+    public GameView gameView;
     @BindView(R.id.list_view)
     public ListView listView;
 
@@ -33,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         unbinder = ButterKnife.bind(this);
-
-        final GameView gameView = new GameView(this);
-        this.gameView.addView(gameView);
 
         fillListItems(listItems);
         final ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this,  android.R.layout.simple_list_item_1, listItems);
