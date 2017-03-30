@@ -35,7 +35,6 @@ public class GameView extends View {
     boolean drawQueen[][];
 
     Paint paint;
-
     Drawable queenIcon;
 
     public GameView(Context context) {
@@ -61,31 +60,24 @@ public class GameView extends View {
 
     private void init(Context context) {
         if(!isInEditMode()) {
-            rows = QUEENSCOUNT;
-            columns = QUEENSCOUNT;
 
+            rows = columns = QUEENSCOUNT;
             MARGIN = dpToPx(MARGIN_DP);
 
-            for(int i = 0; i < rows; i++) {
+            drawQueen = new boolean[rows][columns];
+            for(int i = 0; i < QUEENSCOUNT; i++) {
                 for(int j = 0; j < columns; j++) {
                     drawQueen[i][j] = false;
                 }
             }
 
             queenIcon = ContextCompat.getDrawable(context, R.drawable.queen);
-
             paint = new Paint();
         }
     }
 
     public static int dpToPx(double dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        drawChessTable(canvas);
     }
 
     private int getFloatAsInt(float input) {
@@ -120,6 +112,12 @@ public class GameView extends View {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        drawChessTable(canvas);
     }
 
     @Override

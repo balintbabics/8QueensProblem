@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //draw Queens to the right place, each list item is an unique solution
+
             }
         });
     }
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    // TODO: make `allCases` dynamic
     private ArrayList<Integer> fillListItems(ArrayList<Integer> listItems) {
         int item = 1;
         int allCases = 92;
